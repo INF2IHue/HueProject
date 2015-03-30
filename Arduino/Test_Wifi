@@ -1,0 +1,58 @@
+//De code voor het testen van de verbinding met het netwerk
+
+#include <LiquidCrystal.h>
+#include <SPI.h>
+#include <WiFly.h>
+#include <Wire.h>
+#include <Adafruit_BMP085.h>
+#include <dht.h>
+#define dht_dpin A1
+
+int temperatuur;
+int luchtvochtigheid;
+
+WiFlyClient client("192.169.0.50", 80);
+
+void setup() {
+  Serial.begin(9600);
+  WiFly.begin();
+  delay(2000);
+  Serial.println("connecting...");
+}
+
+void loop() {
+  if(WiFly.join("HUE",""))
+  {
+    Serial.println(WiFly.ip());
+  }
+  else
+  {
+     Serial.println("geen verbinding");
+     Serial.println(WiFly.ip());
+  }
+  /*if(WiFly.ip() != 0.0.0.0)
+   {
+   DHT.read11(dht_dpin);
+   temperatuur = (int) DHT.temperature;
+   luchtvochtigheid = DHT.humidity;
+   
+   String url = "GET /~mientoentj/webservices/mgdata.php?temperatuur=";
+   String urlLucht = "&luchtvochtigheid=";
+   String urlHttp = " HTTP/1.0";
+  String urlf = url + temperatuur + url4 + luchtvochtigheid + urlHttp;
+  
+  if(client.connect()) {
+    Serial.println("Updated");
+    client.println(urlf);
+    client.println();
+    }
+
+    else {
+    Serial.println("Update failed");
+
+    }  
+  
+  
+  }*/
+  //delay(600000);
+}
