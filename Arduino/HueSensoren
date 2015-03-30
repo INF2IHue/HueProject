@@ -1,0 +1,73 @@
+//De definitieve versie van de Arduino
+//Deze code maakt verbinding met het HUE netwerk en de server.
+//Hierbij verstuurt hij de sensorgegevens naar de webpagina die ze in de database stopt
+
+
+// ALle libraries invoegen van Wifi en dht-sensor
+#include <SPI.h>
+#include <WiFly.h>
+#include <Wire.h>
+#include <dht.h>
+#define dht_dpin A2
+
+// variabelen declareren
+int temperatuur;
+int luchtvochtigheid;
+dht DHT;
+
+//Declareren server en port waarmee we verbinden
+WiFlyClient client("192.168.0.50", 80);
+
+void setup() {
+  //Opstarten van Wifi en Seriele monitor
+  Serial.begin(9600);
+  WiFly.begin();
+  delay(2000);
+  Serial.println("connecting...");
+}
+
+void loop() {
+  //Join Hue netwerk
+  if(WiFly.join("HUE","martijnpony"))
+  {
+    //Print Ip zodat je weet wat de ip van de arduino is
+    Serial.println(WiFly.ip());
+    
+    //Sensor gegevens lezen en in variabelen zetten
+   DHT.read11(dht_dpin);
+   temperatuur = (int) DHT.temperature;
+   luchtvochtigheid = DHT.humidity;
+   
+   //print de temperatuur en luchtvochtigheid uit
+   Serial.println(temperatuur);
+   Serial.println(luchtvochtigheid);
+   
+   //Url maken naar de webpagina om de gegevens up te daten in de database
+   String url = "GET /Arduino.php?temperatuur=";
+   String urlLucht = "&luchtvochtigheid=";
+   String urlHttp = " HTTP/1.0";
+  String urlf = url + temperatuur + urlLucht + luchtvochtigheid + urlHttp;
+  
+  //Connecten met de server en als hij verbonden is naar de webpagina gaan
+  if(client.connect()) {
+    Serial.println("Updated");
+    client.println(urlf);
+    Serial.println(urlf);
+    client.println();
+    }
+
+    else {
+      //Als hij niet verbonden is
+    Serial.println("Update failed");
+
+    } 
+  }
+  //ALs hij geen verbinding heeft
+  else
+  {
+     Serial.println("geen verbinding");
+  }
+  delay(600000);
+}
+   
+   
